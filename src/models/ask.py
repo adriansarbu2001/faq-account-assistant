@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 
 class AskRequest(BaseModel):
     user_question: str = Field(..., description="Question from the user.")
-    collection: str | None = Field(default=None, description="Optional FAQ collection name.")
 
 
 class AskResponse(BaseModel):
@@ -13,7 +12,6 @@ class AskResponse(BaseModel):
     similarity_score: float | None = Field(
         default=None, description="Cosine similarity if from FAQ."
     )
-    collection: str | None = Field(default=None, description="Collection name when applicable.")
     routing_domain: str | None = Field(
         default=None, description="IT or NON_IT when routing is enabled."
     )

@@ -11,8 +11,12 @@ class Settings(BaseSettings):
 
     api_token: str = Field(default="dev-token")
 
-    # OpenAI and similarity placeholders, will be used soon
+    db_url: str = Field(default="postgresql+psycopg://postgres:postgres@db:5432/faqdb")
+
     openai_api_key: str = Field(default="")
+    embedding_model: str = Field(default="text-embedding-3-small")
+    embedding_dim: int = Field(default=1536)
+
     similarity_threshold: float = Field(default=0.80)
     top_k: int = Field(default=8)
     fallback_model: str = Field(default="gpt-4o-mini")
