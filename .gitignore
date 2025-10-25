@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+.eggs/
+dist/
+.build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+infra/env/.env.docker
