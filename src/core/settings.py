@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     similarity_threshold: float = Field(default=0.80)
     fallback_model: str = Field(default="gpt-4o-mini")
 
+    log_level: str = Field(default="INFO")
+
     compliance_message: str = Field(
         default="This is not really what I was trained for, therefore I cannot answer. Try again."
     )

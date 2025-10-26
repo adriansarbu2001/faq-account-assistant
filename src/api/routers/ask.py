@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends
 
 from src.api.deps.auth import get_token
@@ -7,6 +9,7 @@ from src.services.openai_fallback import answer_with_langchain
 from src.services.router import route_domain
 from src.services.similarity import find_best_local_match
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -22,6 +25,10 @@ def ask(payload: AskRequest) -> AskResponse:
     domain = route_domain(payload.user_question)
 
     if domain == "NON_IT":
+        logger.info(
+            f"[NON-IT] Question='{payload.user_question}' | Source='local' "
+            f"| Matched='' | Score=None"
+        )
         return AskResponse(
             source="local",
             matched_question="N/A",
@@ -31,6 +38,10 @@ def ask(payload: AskRequest) -> AskResponse:
     candidate = find_best_local_match(payload.user_question)
 
     if candidate and candidate.score >= settings.similarity_threshold:
+        logger.info(
+            f"[LOCAL] Question='{payload.user_question}' | Matched='{candidate.question}' "
+            f"| Similarity={candidate.score}"
+        )
         return AskResponse(
             source="local",
             matched_question=candidate.question,
@@ -38,7 +49,10 @@ def ask(payload: AskRequest) -> AskResponse:
         )
 
     fallback_answer = answer_with_langchain(payload.user_question)
-
+    logger.info(
+        f"[OPENAI] Question='{payload.user_question}' | Fallback used "
+        f"| Similarity={f'{candidate.score}' if candidate else 'None'}"
+    )
     return AskResponse(
         source="openai",
         matched_question="N/A",

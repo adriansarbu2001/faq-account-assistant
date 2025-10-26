@@ -1,14 +1,14 @@
+"""Central logging configuration for the API."""
+
 import logging
+import sys
 
-import structlog
 
-
-def configure_logging() -> None:
-    structlog.configure(
-        processors=[
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.JSONRenderer(),
-        ],
-        wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
-        cache_logger_on_first_use=True,
+def configure_logging(level: str = "INFO") -> None:
+    """Configure application-wide logging format and level."""
+    log_format = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+    logging.basicConfig(
+        level=getattr(logging, level.upper(), logging.INFO),
+        format=log_format,
+        handlers=[logging.StreamHandler(sys.stdout)],
     )

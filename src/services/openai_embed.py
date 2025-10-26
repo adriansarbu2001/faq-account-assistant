@@ -19,7 +19,7 @@ def _client_lazy() -> OpenAI:
 def embed_text(texts: list[str]) -> list[list[float]]:
     """
     Return embeddings for input texts using the configured model.
-    Text is normalized lightly; model dimension should match settings.embedding_dim.
+    Text is normalized lightly.
     """
     # Basic normalization; expand later if needed
     inputs = [t.strip() for t in texts]
