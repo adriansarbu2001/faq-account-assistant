@@ -1,35 +1,43 @@
-"""Seed FAQ items from JSON, computing embeddings."""
+"""Append all FAQ rows from a JSON file with NULL embeddings.
+
+Usage:
+  python scripts/seed_faq.py --file data/faq_seed.json
+"""
 
 from __future__ import annotations
 
 import json
+from argparse import ArgumentParser
 from pathlib import Path
 
 from sqlalchemy import insert
+from sqlalchemy.orm import Session
 
-from src.db.session import SessionLocal
-from src.services.openai_embed import embed_text
+from src.db.session import engine
 from src.vectorstore.models import FAQItem
-
-SEED_PATH = Path("data/faq_seed.json")
 
 
 def main() -> None:
-    if not SEED_PATH.exists():
-        raise SystemExit(f"Seed file not found: {SEED_PATH}")
+    parser = ArgumentParser()
+    parser.add_argument("--file", "-f", default="data/faq_seed.json", help="Path to JSON file")
+    args = parser.parse_args()
 
-    payload = json.loads(SEED_PATH.read_text(encoding="utf-8"))
+    path = Path(args.file)
+    if not path.exists():
+        raise SystemExit(f"Seed file not found: {path}")
 
-    questions = [row["question"] for row in payload]
-    emb_q = embed_text(questions)
-    records = [
-        {"question": row["question"], "answer": row["answer"], "embedding_q": vq}
-        for row, vq in zip(payload, emb_q, strict=False)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+
+    rows = [
+        {"question": row["question"], "answer": row["answer"], "embedding_q": None}
+        for row in payload
     ]
 
-    with SessionLocal() as s:
-        s.execute(insert(FAQItem).values(records))
-        s.commit()
+    with Session(engine) as session:
+        session.execute(insert(FAQItem).values(rows))
+        session.commit()
+
+    print(f"Inserted {len(rows)} rows from {path}.")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
-"""Initialize Postgres database schema."""
+"""Initialize Postgres schema for development (allows NULL embeddings, no IVFFlat)."""
+
+from __future__ import annotations
 
 from sqlalchemy import text
 
@@ -8,11 +10,11 @@ from src.vectorstore.models import Base
 
 def main() -> None:
     with engine.begin() as conn:
-        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
         Base.metadata.drop_all(bind=conn)
         Base.metadata.create_all(bind=conn)
         conn.execute(text("ANALYZE"))
-    print("Schema initialized.")
+    print("Schema ready.")
 
 
 if __name__ == "__main__":

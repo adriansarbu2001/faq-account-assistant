@@ -34,6 +34,7 @@ def find_best_local_match(user_question: str) -> SimilarityResult | None:
     sql = """
         SELECT question, answer, (1 - (embedding_q <=> :qvec)) AS similarity
         FROM faq_items
+        WHERE embedding_q IS NOT NULL
         ORDER BY embedding_q <=> :qvec
         LIMIT 1
     """
