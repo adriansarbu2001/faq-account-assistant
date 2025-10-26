@@ -26,4 +26,3 @@ class FAQItem(Base):
     answer: Mapped[str] = mapped_column(Text, nullable=False)
     # Embeddings for search
     embedding_q = Column(Vector(dim=settings.embedding_dim), nullable=False)
-    embedding_qa = Column(Vector(dim=settings.embedding_dim), nullable=True)

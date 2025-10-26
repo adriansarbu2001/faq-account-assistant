@@ -19,22 +19,13 @@ def main() -> None:
         raise SystemExit(f"Seed file not found: {SEED_PATH}")
 
     payload = json.loads(SEED_PATH.read_text(encoding="utf-8"))
+
     questions = [row["question"] for row in payload]
-    qa_texts = [f"{row['question']}\n\n{row['answer']}" for row in payload]
-
     emb_q = embed_text(questions)
-    emb_qa = embed_text(qa_texts)
-
-    records = []
-    for row, vq, vqa in zip(payload, emb_q, emb_qa, strict=False):
-        records.append(
-            {
-                "question": row["question"],
-                "answer": row["answer"],
-                "embedding_q": vq,
-                "embedding_qa": vqa,
-            }
-        )
+    records = [
+        {"question": row["question"], "answer": row["answer"], "embedding_q": vq}
+        for row, vq in zip(payload, emb_q, strict=False)
+    ]
 
     with SessionLocal() as s:
         s.execute(insert(FAQItem).values(records))

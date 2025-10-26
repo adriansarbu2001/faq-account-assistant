@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     embedding_dim: int = Field(default=1536)
 
     similarity_threshold: float = Field(default=0.80)
-    top_k: int = Field(default=8)
     fallback_model: str = Field(default="gpt-4o-mini")
 
     compliance_message: str = Field(
