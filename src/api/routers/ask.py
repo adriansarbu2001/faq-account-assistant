@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from src.api.deps.auth import get_token
 from src.core.settings import settings
 from src.models.ask import AskRequest, AskResponse
+from src.services.openai_fallback import answer_with_langchain
 from src.services.router import route_domain
 from src.services.similarity import find_best_local_match
 
@@ -12,11 +13,11 @@ router = APIRouter()
 @router.post("/ask-question", response_model=AskResponse, dependencies=[Depends(get_token)])
 def ask(payload: AskRequest) -> AskResponse:
     """
-    Decision flow per spec:
-      1) Local similarity search in pgvector.
-      2) If score >= threshold -> return FAQ answer.
-      3) Else -> OpenAI fallback (placeholder for now).
-    Compliance message is enforced when we add routing (IT vs NON_IT).
+    Flow:
+      1) Route to IT / NON_IT.
+      2) If NON_IT -> compliance message.
+      3) Else try local FAQ.
+      4) If below threshold -> LangChain fallback.
     """
     domain = route_domain(payload.user_question)
 
@@ -42,10 +43,11 @@ def ask(payload: AskRequest) -> AskResponse:
             top_candidate=candidate.question,
         )
 
+    fallback_answer = answer_with_langchain(payload.user_question)
     return AskResponse(
         source="openai",
         matched_question="N/A",
-        answer="Fallback not yet implemented. Local match below threshold.",
+        answer=fallback_answer,
         similarity_score=candidate.score if candidate else None,
         routing_domain=domain,
         top_candidate=candidate.question if candidate else None,

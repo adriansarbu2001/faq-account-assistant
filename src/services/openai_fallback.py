@@ -1,0 +1,41 @@
+"""LangChain-based OpenAI fallback for low-similarity queries."""
+
+from __future__ import annotations
+
+from typing import Final
+
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+from src.core.settings import settings
+
+_PROMPT: Final[ChatPromptTemplate] = ChatPromptTemplate.from_template(
+    "You answer end-user questions about account settings.\n"
+    "If you are unsure, say so briefly and suggest the closest relevant steps.\n\n"
+    "Question: {question}\n"
+    "Answer in 2-4 concise sentences."
+)
+
+
+def _build_chain() -> StrOutputParser:
+    llm = ChatOpenAI(
+        model=settings.fallback_model,
+        temperature=0,
+        api_key=settings.openai_api_key,
+        timeout=15,
+        max_retries=0,
+    )
+    return _PROMPT | llm | StrOutputParser()
+
+
+@retry(wait=wait_exponential(multiplier=0.5, max=4), stop=stop_after_attempt(3))
+def answer_with_langchain(question: str) -> str:
+    """
+    Produce an answer for a user question using LangChain + OpenAI.
+    Retries transient failures with exponential backoff.
+    """
+    chain = _build_chain()
+    result = chain.invoke({"question": question}).strip()
+    return result
