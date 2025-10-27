@@ -15,22 +15,13 @@ _NON_IT_HINTS = [
     "holiday",
     "salary",
     "payroll",
-    "invoice",
-    "tax",
-    "hr",
-    "human resources",
-    "marketing",
-    "sales",
-    "refund",
 ]
 _IT_HINTS = [
     "password",
     "account",
     "2fa",
     "authentication",
-    "login",
-    "email change",
-    "reset",
+    "email",
 ]
 
 
@@ -43,7 +34,7 @@ def _keyword_gate(q: str) -> Literal["IT", "NON_IT", "AMBIG"]:
     return "AMBIG"
 
 
-_prompt = ChatPromptTemplate.from_template(
+_PROMPT = ChatPromptTemplate.from_template(
     """You are a router that classifies questions.
 Answer only with IT or NON_IT.
 
@@ -58,10 +49,9 @@ Answer:"""
 )
 
 
-# Build LCEL chain: prompt → llm → parser
 def _llm_route(q: str) -> Literal["IT", "NON_IT"]:
     llm = ChatOpenAI(model=settings.fallback_model, temperature=0, api_key=settings.openai_api_key)
-    chain = _prompt | llm | StrOutputParser()
+    chain = _PROMPT | llm | StrOutputParser()
     result = chain.invoke({"question": q}).strip().upper()
     return "IT" if result.startswith("IT") else "NON_IT"
 

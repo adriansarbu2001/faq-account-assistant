@@ -15,7 +15,7 @@ _PROMPT: Final[ChatPromptTemplate] = ChatPromptTemplate.from_template(
     "You answer end-user questions about account settings.\n"
     "If you are unsure, say so briefly and suggest the closest relevant steps.\n\n"
     "Question: {question}\n"
-    "Answer in 2-4 concise sentences."
+    "Answer in 1-3 concise sentences."
 )
 
 
@@ -31,7 +31,7 @@ def _build_chain() -> StrOutputParser:
 
 
 @retry(wait=wait_exponential(multiplier=0.5, max=4), stop=stop_after_attempt(3))
-def answer_with_langchain(question: str) -> str:
+def openai_answer(question: str) -> str:
     """
     Produce an answer for a user question using LangChain + OpenAI.
     Retries transient failures with exponential backoff.

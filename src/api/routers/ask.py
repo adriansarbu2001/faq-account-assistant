@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from src.api.deps.auth import get_token
 from src.core.settings import settings
 from src.models.ask import AskRequest, AskResponse
-from src.services.openai_fallback import answer_with_langchain
+from src.services.openai_fallback import openai_answer
 from src.services.router import route_domain
 from src.services.similarity import find_best_local_match
 
@@ -48,7 +48,7 @@ def ask(payload: AskRequest) -> AskResponse:
             answer=candidate.answer,
         )
 
-    fallback_answer = answer_with_langchain(payload.user_question)
+    fallback_answer = openai_answer(payload.user_question)
     logger.info(
         f"[OPENAI] Question='{payload.user_question}' | Fallback used "
         f"| Similarity={f'{candidate.score}' if candidate else 'None'}"
