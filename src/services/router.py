@@ -1,4 +1,4 @@
-"""AI Router using LangChain to classify questions as IT or NON_IT."""
+"""AI Router to classify questions as IT or NON_IT."""
 
 from __future__ import annotations
 

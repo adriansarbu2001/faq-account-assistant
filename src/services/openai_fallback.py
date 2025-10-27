@@ -1,4 +1,4 @@
-"""LangChain-based OpenAI fallback for low-similarity queries."""
+"""OpenAI fallback for low-similarity queries."""
 
 from __future__ import annotations
 
