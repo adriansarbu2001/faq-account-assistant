@@ -1,6 +1,9 @@
 init-db:
 	python scripts/init_db.py
 
+seed-default:
+	python scripts/seed_faq.py --file data/faq_seed.json
+
 seed:
 	python scripts/seed_faq.py --file $(FILE)
 
@@ -11,7 +14,7 @@ update-all-embeddings:
 	python scripts/update_all_embeddings.py
 
 build:
-	docker compose -f infra/docker-compose.yaml build --no-cache api db
+	docker compose -f infra/docker-compose.yaml build --no-cache api worker redis db
 
 up:
 	docker compose -f infra/docker-compose.yaml up -d
@@ -19,17 +22,20 @@ up:
 down:
 	docker compose -f infra/docker-compose.yaml down
 
-down-erase:
+erase:
 	docker compose -f infra/docker-compose.yaml down -v
 
 up-db:
 	docker compose -f infra/docker-compose.yaml up -d db
 
 down-db:
+	docker compose -f infra/docker-compose.yaml down db
+
+erase-db:
 	docker compose -f infra/docker-compose.yaml down -v db
 
-logs:
-	docker compose -f infra/docker-compose.yaml logs -f api db
+logs-all:
+	docker compose -f infra/docker-compose.yaml logs -f api worker redis db
 
 logs-api:
 	docker compose -f infra/docker-compose.yaml logs -f api

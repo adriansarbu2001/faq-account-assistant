@@ -20,7 +20,9 @@ def test_keyword_gate_forced_non_it(monkeypatch: pytest.MonkeyPatch) -> None:
     assert router._keyword_gate("I talk about zzz benefits") == "NON_IT"
 
 
-def test_keyword_gate_ambig_when_hints_empty(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_keyword_gate_ambig_when_hints_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setattr(router, "_IT_HINTS", [], raising=True)
     monkeypatch.setattr(router, "_NON_IT_HINTS", [], raising=True)
     assert router._keyword_gate("ambiguous question") == "AMBIG"
@@ -57,5 +59,7 @@ def test_router_llm_path_non_it() -> None:
             patch("src.services.router.StrOutputParser") as _parser,
         ):
             _prompt.__or__.return_value.__or__.return_value = fake_chain
-            assert route_domain("ambiguous question about holidays") == "NON_IT"
+            assert (
+                route_domain("ambiguous question about holidays") == "NON_IT"
+            )
             fake_chain.invoke.assert_called_once()

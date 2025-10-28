@@ -11,18 +11,12 @@ dependencies = [
   "uvicorn[standard]>=0.32.0",
   "pydantic>=2.9.0",
   "pydantic-settings>=2.4.0",
-  "httpx>=0.27.0",
   "sqlalchemy>=2.0.35",
   "psycopg[binary,pool]>=3.2.3",
   "pgvector>=0.3.3",
-  "alembic>=1.14.0",
   "langchain>=1.0.2",
   "langchain-openai==1.0.1",
-  "openai>=1.51.0",
   "tenacity>=9.0.0",
-  "structlog>=24.4.0",
-  "python-json-logger>=2.0.7",
-  "prometheus-client>=0.21.0",
   "celery[redis]>=5.4.0",
   "ruff>=0.6.9",
   "mypy>=1.11.2",
@@ -32,7 +26,7 @@ dependencies = [
 ]
 
 [tool.ruff]
-line-length = 100
+line-length = 79
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -53,5 +47,5 @@ addopts = "--cov --cov-report=term-missing -q"
 pythonpath = ["src"]
 
 [tool.black]
-line-length = 100
+line-length = 79
 target-version = ["py311"]

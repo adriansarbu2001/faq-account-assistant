@@ -7,5 +7,7 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     source: str = Field(..., description='"local" or "openai"')
-    matched_question: str = Field(..., description='Exact matched FAQ question or "N/A"')
+    matched_question: str = Field(
+        ..., description='Exact matched FAQ question or "N/A"'
+    )
     answer: str = Field(..., description="Final answer text.")

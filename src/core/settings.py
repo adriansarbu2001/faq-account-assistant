@@ -3,7 +3,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8"
+    )
 
     host: str = Field(default="0.0.0.0")
     port: int = Field(default=8000)
@@ -11,7 +13,9 @@ class Settings(BaseSettings):
 
     api_token: str = Field(default="dev-token")
 
-    db_url: str = Field(default="postgresql+psycopg://postgres:postgres@db:5432/faqdb")
+    db_url: str = Field(
+        default="postgresql+psycopg://postgres:postgres@db:5432/faqdb"
+    )
 
     openai_api_key: str = Field(default="")
     embedding_model: str = Field(default="text-embedding-3-small")
@@ -23,7 +27,10 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO")
 
     compliance_message: str = Field(
-        default="This is not really what I was trained for, therefore I cannot answer. Try again."
+        default=(
+            "This is not really what I was trained for, "
+            "therefore I cannot answer. Try again."
+        )
     )
 
 

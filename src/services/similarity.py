@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import bindparam, text
+from sqlalchemy.exc import SQLAlchemyError
 
 from src.core.celery_app import compute_embedding
 from src.core.settings import settings
 from src.db.session import SessionLocal
 from src.services.openai_embed import embed_text
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -38,11 +42,17 @@ def find_best_local_match(user_question: str) -> SimilarityResult | None:
         ORDER BY embedding_q <=> :qvec
         LIMIT 1
     """
-    stmt = text(sql).bindparams(bindparam("qvec", qvec, type_=Vector(dim=settings.embedding_dim)))
-    with SessionLocal() as s:
-        row = s.execute(stmt).fetchone()
-        if not row:
-            return None
-        return SimilarityResult(
-            question=row.question, answer=row.answer, score=float(row.similarity)
-        )
+    stmt = text(sql).bindparams(
+        bindparam("qvec", qvec, type_=Vector(dim=settings.embedding_dim))
+    )
+    try:
+        with SessionLocal() as s:
+            row = s.execute(stmt).fetchone()
+    except SQLAlchemyError as e:
+        logger.error("DB error during similarity:\n%s", e)
+        return None
+    if not row:
+        return None
+    return SimilarityResult(
+        question=row.question, answer=row.answer, score=float(row.similarity)
+    )

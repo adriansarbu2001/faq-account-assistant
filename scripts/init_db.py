@@ -1,4 +1,4 @@
-"""Initialize Postgres schema for development (allows NULL embeddings, no IVFFlat)."""
+"""Initialize Postgres schema."""
 
 from __future__ import annotations
 

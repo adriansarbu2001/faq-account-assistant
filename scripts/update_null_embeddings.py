@@ -23,7 +23,11 @@ def _chunks(items: list[T], n: int) -> list[list[T]]:
 def main() -> None:
     with Session(engine) as session:
         items = (
-            session.execute(select(FAQItem).where(FAQItem.embedding_q.is_(None))).scalars().all()
+            session.execute(
+                select(FAQItem).where(FAQItem.embedding_q.is_(None))
+            )
+            .scalars()
+            .all()
         )
         if not items:
             print("No NULL embeddings to update.")
@@ -35,7 +39,11 @@ def main() -> None:
             texts = [it.question for it in batch]
             vectors = embed_text(texts)
             for it, vec in zip(batch, vectors, strict=False):
-                session.execute(update(FAQItem).where(FAQItem.id == it.id).values(embedding_q=vec))
+                session.execute(
+                    update(FAQItem)
+                    .where(FAQItem.id == it.id)
+                    .values(embedding_q=vec)
+                )
             session.commit()
 
         print("Embeddings updated for all NULL rows.")

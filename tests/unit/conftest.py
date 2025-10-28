@@ -18,9 +18,13 @@ def _env() -> Iterator[None]:
 
 @pytest.fixture(autouse=True)
 def _no_celery_for_tests(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("src.services.similarity._get_query_vector", lambda q: [0.0], raising=True)
+    monkeypatch.setattr(
+        "src.services.similarity._get_query_vector",
+        lambda q: [0.0],
+        raising=True,
+    )
 
 
 @pytest.fixture()
 def client() -> TestClient:
-    return TestClient(app)
+    return TestClient(app, raise_server_exceptions=False)

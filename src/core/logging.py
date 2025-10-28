@@ -1,5 +1,3 @@
-"""Central logging configuration for the API."""
-
 import logging
 import sys
 

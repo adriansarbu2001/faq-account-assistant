@@ -17,12 +17,17 @@ class _SimLow:
 
 def test_openai_fallback_when_below_threshold(client: TestClient) -> None:
     sim = _SimLow(
-        question="Q", answer="A", score=max(0.0, float(settings.similarity_threshold) - 0.2)
+        question="Q",
+        answer="A",
+        score=max(0.0, float(settings.similarity_threshold) - 0.2),
     )
     with (
         patch("src.api.routers.ask.route_domain", return_value="IT"),
         patch("src.api.routers.ask.find_best_local_match", return_value=sim),
-        patch("src.api.routers.ask.openai_answer", return_value="Mocked generated answer"),
+        patch(
+            "src.api.routers.ask.openai_answer",
+            return_value="Mocked generated answer",
+        ),
     ):
         r = client.post(
             "/ask-question",

@@ -1,5 +1,3 @@
-"""FAQ item ORM model with pgvector column (embedding can be NULL)."""
-
 from __future__ import annotations
 
 import uuid
@@ -17,11 +15,13 @@ class Base(DeclarativeBase):
 
 
 class FAQItem(Base):
-    """FAQ item stored with an optional vector embedding for semantic search."""
+    """FAQ item stored with an optional vector embedding."""
 
     __tablename__ = "faq_items"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     question: Mapped[str] = mapped_column(Text, nullable=False)
     answer: Mapped[str] = mapped_column(Text, nullable=False)
     embedding_q = Column(Vector(dim=settings.embedding_dim), nullable=True)

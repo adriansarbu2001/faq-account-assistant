@@ -24,16 +24,6 @@ _IT_HINTS = [
     "email",
 ]
 
-
-def _keyword_gate(q: str) -> Literal["IT", "NON_IT", "AMBIG"]:
-    t = q.lower()
-    if any(k in t for k in _NON_IT_HINTS):
-        return "NON_IT"
-    if any(k in t for k in _IT_HINTS):
-        return "IT"
-    return "AMBIG"
-
-
 _PROMPT = ChatPromptTemplate.from_template(
     """You are a router that classifies questions.
 Answer only with IT or NON_IT.
@@ -49,8 +39,21 @@ Answer:"""
 )
 
 
+def _keyword_gate(q: str) -> Literal["IT", "NON_IT", "AMBIG"]:
+    t = q.lower()
+    if any(k in t for k in _NON_IT_HINTS):
+        return "NON_IT"
+    if any(k in t for k in _IT_HINTS):
+        return "IT"
+    return "AMBIG"
+
+
 def _llm_route(q: str) -> Literal["IT", "NON_IT"]:
-    llm = ChatOpenAI(model=settings.fallback_model, temperature=0, api_key=settings.openai_api_key)
+    llm = ChatOpenAI(
+        model=settings.fallback_model,
+        temperature=0,
+        api_key=settings.openai_api_key,
+    )
     chain = _PROMPT | llm | StrOutputParser()
     result = chain.invoke({"question": q}).strip().upper()
     return "IT" if result.startswith("IT") else "NON_IT"

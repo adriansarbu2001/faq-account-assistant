@@ -19,7 +19,9 @@ from src.vectorstore.models import FAQItem
 
 def main() -> None:
     parser = ArgumentParser()
-    parser.add_argument("--file", "-f", default="data/faq_seed.json", help="Path to JSON file")
+    parser.add_argument(
+        "--file", "-f", default="data/faq_seed.json", help="Path to JSON file"
+    )
     args = parser.parse_args()
 
     path = Path(args.file)
@@ -29,7 +31,11 @@ def main() -> None:
     payload = json.loads(path.read_text(encoding="utf-8"))
 
     rows = [
-        {"question": row["question"], "answer": row["answer"], "embedding_q": None}
+        {
+            "question": row["question"],
+            "answer": row["answer"],
+            "embedding_q": None,
+        }
         for row in payload
     ]
 
