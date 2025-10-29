@@ -130,6 +130,8 @@ Use PyTest to run the unit tests:
 
 ```bash
 pytest --cov
+# or
+PYTHONPATH=$PWD pytest --cov
 ```
 
 ---
